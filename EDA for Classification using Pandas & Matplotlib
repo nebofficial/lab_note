@@ -1,0 +1,27 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# 📊 Load the dataset
+df = pd.read_csv('documents.csv')
+
+# 🔥 Basic Info & Missing Values
+print(df.info())
+print(df.isnull().sum())
+
+# 📈 Class Distribution
+sns.countplot(x='Label', data=df, palette='pastel')
+plt.title('Class Distribution')
+plt.show()
+
+# 🌟 Word Count Distribution
+df['Word_Count'] = df['Text'].apply(lambda x: len(str(x).split()))
+sns.histplot(df['Word_Count'], bins=20, kde=True, color='skyblue')
+plt.title('Word Count Distribution')
+plt.show()
+
+# 📊 Correlation Heatmap
+if df.select_dtypes(include='number').shape[1] > 1:
+    sns.heatmap(df.corr(), annot=True, cmap='coolwarm')
+    plt.title('Correlation Heatmap')
+    plt.show()
