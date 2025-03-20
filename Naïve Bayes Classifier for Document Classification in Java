@@ -1,0 +1,67 @@
+import weka.classifiers.bayes.NaiveBayes;
+import weka.core.Instance;
+import weka.core.Instances;
+import weka.core.converters.CSVLoader;
+import java.io.File;
+
+public class NaiveBayesClassifier {
+    public static void main(String[] args) {
+        try {
+            // Load dataset
+            CSVLoader loader = new CSVLoader();
+            loader.setSource(new File("documents.csv"));
+            Instances data = loader.getDataSet();
+            data.setClassIndex(data.numAttributes() - 1);
+
+            // Train/Test split
+            int trainSize = (int) (data.numInstances() * 0.8);
+            int testSize = data.numInstances() - trainSize;
+            Instances train = new Instances(data, 0, trainSize);
+            Instances test = new Instances(data, trainSize, testSize);
+
+            // Train Naïve Bayes model
+            NaiveBayes model = new NaiveBayes();
+            model.buildClassifier(train);
+
+            // Test and evaluate
+            int tp = 0, tn = 0, fp = 0, fn = 0;
+
+            for (int i = 0; i < test.numInstances(); i++) {
+                Instance instance = test.instance(i);
+                double actual = instance.classValue();
+                double predicted = model.classifyInstance(instance);
+
+                if (actual == predicted) {
+                    if (actual == 1.0) tp++; else tn++;
+                } else {
+                    if (predicted == 1.0) fp++; else fn++;
+                }
+            }
+
+            // Calculate metrics
+            double accuracy = (double) (tp + tn) / testSize * 100;
+            double precision = (double) tp / (tp + fp);
+            double recall = (double) tp / (tp + fn);
+            double f1Score = 2 * ((precision * recall) / (precision + recall));
+
+            // Display results
+            System.out.println("Accuracy: " + accuracy + "%");
+            System.out.println("Precision: " + precision);
+            System.out.println("Recall: " + recall);
+            System.out.println("F1-Score: " + f1Score);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+
+<dependencies>
+    <dependency>
+        <groupId>nz.ac.waikato.cms.weka</groupId>
+        <artifactId>weka-stable</artifactId>
+        <version>3.8.6</version>
+    </dependency>
+</dependencies>
+
