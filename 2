@@ -1,0 +1,29 @@
+import pandas as pd
+import numpy as np
+
+df = pd.read_csv("/content/drive/MyDrive/Colab Notebooks/ws.csv")
+attr = np.array(df.iloc[:, :-1])
+print("\nInstances are:\n",attr)
+target = np.array(df.iloc[:, -1])
+print("\nTarget Values are:",target)
+def learn(attr, target):
+    s = attr[0].copy()
+    print("\nInitialization of specific_h and general_h:\n")
+    print("\nSpecfic Boundary:",s)
+    g = [['?' for _ in range(len(s))] for _ in range(len(s))]
+    print("\nGeneric Boundary:",g)
+    for i, h in enumerate(attr):
+        if target[i] == "Yes":
+            for j in range(len(s)):
+                if h[j] != s[j]:
+                    s[j] = '?'
+                    g[j][j] = '?'
+        else:
+            for j in range(len(s)):
+                g[j][j] = s[j] if h[j] != s[j] else '?'
+    g = [h for h in g if h != ['?' for _ in range(len(s))]]
+    return s, g
+
+s_final, g_final = learn(attr, target)
+print("Specific Hypothesis:", s_final)
+print("General Hypotheses:", g_final)
