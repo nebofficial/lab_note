@@ -1,0 +1,38 @@
+import java.io.*;
+import java.util.*;
+
+public class NaiveBayesFile {
+
+    public static void main(String[] args) {
+        Map<String, Integer> pos = new HashMap<>(), neg = new HashMap<>();
+        try (BufferedReader br = new BufferedReader(new FileReader("training_data.txt"))) {
+            br.lines().forEach(line -> Arrays.stream(line.split(":")[1].split(" "))
+                .forEach(word -> (line.startsWith("positive") ? pos : neg)
+                    .put(word, (line.startsWith("positive") ? pos : neg).getOrDefault(word, 0) + 1)));
+        } catch (IOException e) { e.printStackTrace(); }
+
+        try (BufferedReader br = new BufferedReader(new FileReader("test_data.txt"))) {
+            br.lines().forEach(line -> System.out.printf("Text: %-40s Predicted: %-9s\n", line, 
+                classify(pos, neg, line)));
+        } catch (IOException e) { e.printStackTrace(); }
+    }
+
+    static String classify(Map<String, Integer> pos, Map<String, Integer> neg, String text) {
+        double posScore = 1, negScore = 1;
+        for (String word : text.split(" ")) {
+            posScore *= (pos.getOrDefault(word.toLowerCase(), 0) + 1);
+            negScore *= (neg.getOrDefault(word.toLowerCase(), 0) + 1);
+        }
+        return posScore > negScore ? "positive" : "negative";
+    }
+}
+
+
+ positive: good happy awesome nice great love excellent amazing wonderful
+negative: bad sad terrible awful hate worse horrible negative ugly worst
+
+
+ I love this awesome movie
+This is a terrible and bad film
+What a wonderful experience
+That was the worst movie ever
