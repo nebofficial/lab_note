@@ -1,0 +1,67 @@
+#include <stdio.h>
+#include <string.h>
+
+char stack[20], input[20];
+int top = 0, ip = 0;
+
+void reduce() {
+    while (1) {
+        if (top >= 3 && stack[top-3]=='E' && (stack[top-2]=='+'||stack[top-2]=='*'||stack[top-2]=='/') && stack[top-1]=='E') {
+            printf("\n $%s\t\t%s$\t\t\tE->E%cE", stack, &input[ip], stack[top-2]);
+            top -= 2; stack[top-1] = 'E'; stack[top] = '\0';
+        } else if (stack[top-1]=='a' || stack[top-1]=='b') {
+            printf("\n $%s\t\t%s$\t\t\tE->%c", stack, &input[ip], stack[top-1]);
+            stack[top-1] = 'E';
+        } else break;
+    }
+}
+
+int main() {
+    printf("\n\t\t SHIFT REDUCE PARSER\n\n GRAMMER\n\n E->E+E\n E->E/E\n E->E*E\n E->a/b");
+    printf("\n enter the input symbol:\t");
+    scanf("%s", input); strcat(input, "$");
+
+    printf("\n\t stack implementation table\n stack\t\t input symbol\t\t action\n______\t\t ____________\t\t ______\n");
+    printf("\n $\t\t%s$\t\t\t--", input);
+
+    while (input[ip] != '$') {
+        stack[top++] = input[ip++]; stack[top] = '\0';
+        printf("\n $%s\t\t%s$\t\t\tshift %c", stack, &input[ip], stack[top-1]);
+        reduce();
+    }
+
+    // Perform final reduction to ensure stack contains only "E"
+    reduce();
+
+    // Check if the stack contains only "E" and input is finished
+    if (!strcmp(stack, "E") && input[ip] == '$') 
+        printf("\n $E\t\t$\t\t\tACCEPT");
+    else 
+        printf("\n%s\t\t\t%s\t\t reject", stack, &input[ip]);
+
+    return 0;
+}
+
+
+                 SHIFT REDUCE PARSER
+
+ GRAMMER
+
+ E->E+E
+ E->E/E
+ E->E*E
+ E->a/b
+ enter the input symbol:        a+b
+
+         stack implementation table
+ stack           input symbol            action
+______           ____________            ______
+
+ $              a+b$$                   --
+ $a             +b$$                    shift a
+ $a             +b$$                    E->a
+ $E+            b$$                     shift +
+ $E+b           $$                      shift b
+ $E+b           $$                      E->b
+ $E+E           $$                      E->E+E
+ $E             $                       ACCEPT
