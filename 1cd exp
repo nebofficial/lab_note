@@ -1,0 +1,87 @@
+#include <iostream>
+#include <cstdio>
+#include <cstring>
+#include <cctype>
+using namespace std;
+
+bool isKeyword(const char *str) {
+    const char *kw[] = {"for","while","do","int","float","char","double","static","switch","case"};
+    for (int i = 0; i < 10; i++)
+        if (strcmp(str, kw[i]) == 0) return true;
+    return false;
+}
+
+int main() {
+    FILE *f = fopen("input", "w");
+    char c, str[20]; int val, lines = 1, k = 0;
+
+    while ((c = getchar()) != EOF) putc(c, f); fclose(f);
+    f = fopen("input", "r");
+
+    cout << "Numbers: ";
+    while ((c = getc(f)) != EOF) {
+        if (isdigit(c)) {
+            val = 0;
+            while (isdigit(c)) { val = val * 10 + (c - '0'); c = getc(f); }
+            cout << val << " ";
+            ungetc(c, f);
+        } else if (isalpha(c)) {
+            k = 0;
+            while (isalnum(c) || c == '_' || c == '$') str[k++] = c, c = getc(f);
+            str[k] = '\0'; ungetc(c, f);
+            cout << "\n" << str << " is " << (isKeyword(str) ? "a keyword" : "an identifier");
+        } else if (c == '\n') lines++;
+        else if (!isspace(c)) cout << "\nSpecial char: " << c;
+    }
+
+    fclose(f);
+    cout << "\nTotal lines: " << lines << "\n";
+    return 0;
+}
+
+
+int main(){
+a=5;
+b=8;
+c=a+b;
+printf("\n C value is :%d",c);
+}^Z
+^Z
+Numbers:
+int is a keyword
+main is an identifier
+Special char: (
+Special char: )
+Special char: {
+a is an identifier
+Special char: =5
+Special char: ;
+b is an identifier
+Special char: =8
+Special char: ;
+c is an identifier
+Special char: =
+a is an identifier
+Special char: +
+b is an identifier
+Special char: ;
+printf is an identifier
+Special char: (
+Special char: "
+Special char: \
+n is an identifier
+C is an identifier
+value is an identifier
+is is an identifier
+Special char: :
+Special char: %
+d is an identifier
+Special char: "
+Special char: ,
+c is an identifier
+Special char: )
+Special char: ;
+Special char: }
+Total lines: 6
+
+-----------------------
